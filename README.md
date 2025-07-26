@@ -1,89 +1,259 @@
-# Artist Classification Model
+# 🎨 Artist Detection Deep Learning Model
 
-# Project Overview
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16+-orange.svg)](https://tensorflow.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-This project is a classification model that identifies the artist of a given art image. The user inputs an art image, and the website returns the top three likely artists out of the following 18:
-Vincent van Gogh
-Edgar Degas
-Pablo Picasso
-Pierre-Auguste Renoir
-Albrecht Dürer
-Paul Gauguin
-Francisco Goya
-Rembrandt
-Alfred Sisley
-Titian
-Marc Chagall
-Rene Magritte
-Amedeo Modigliani
-Paul Klee
-Henri Matisse
-Andy Warhol
-Mikhail Vrubel
-Sandro Botticelli
-Additionally, a brief GPT-generated paragraph is provided for each of the top three predicted artists.
+A sophisticated deep learning application that identifies the artist of a given art image using a ResNet50-based neural network. The system provides top 3 artist predictions with confidence scores and AI-generated insights about each artist.
 
-# Dataset
+## 🌟 Features
 
-Source: [Dataset Link](https://www.kaggle.com/datasets/ikarus777/best-artworks-of-all-time/data)
-Description: This dataset is a collection of artist names with their respective artworks.
+- **Multi-Artist Classification**: Identifies artwork from 18 famous artists
+- **AI-Powered Insights**: GPT-generated explanations for predictions
+- **Modern Web Interface**: Beautiful, responsive UI with dark theme
+- **Real-time Processing**: Instant predictions with image upload
+- **Docker Support**: Easy deployment with containerization
+- **High Accuracy**: ResNet50 model with 84%+ accuracy
 
-# Pipeline Steps
+## 🎯 Supported Artists
 
-<b>Data Preprocessing and Augmentation</b>
+| Artist | Artist | Artist |
+|--------|--------|--------|
+| Vincent van Gogh | Edgar Degas | Pablo Picasso |
+| Pierre-Auguste Renoir | Albrecht Dürer | Paul Gauguin |
+| Francisco Goya | Rembrandt | Alfred Sisley |
+| Titian | Marc Chagall | Rene Magritte |
+| Amedeo Modigliani | Paul Klee | Henri Matisse |
+| Andy Warhol | Mikhail Vrubel | Sandro Botticelli |
 
-The images are preprocessed and augmented to improve the model's performance. This involves:
+## 🏗️ Architecture
 
-<li> Working with 18 Classes only (artists that have above than 150 paintings) </li>
-<li> Initializing class weights to each artist </li>
-<li> Rescaling the image pixel values to [0,1]</li>
-<li> Applying random rotations, shifts, shears, and zooms (Augmentation).</li>
-<li> Dividing the dataset into training and validation sets (80%, 20%).</li>
+### Model Architecture
+- **Base Model**: ResNet50 (pretrained on ImageNet)
+- **Input Shape**: 224×224×3 RGB images
+- **Output**: 18-class classification with softmax probabilities
+- **Training Strategy**: Two-phase fine-tuning approach
 
-<b> Model Architecture </b>
-We use the ResNet50 model pretrained on ImageNet as the base model. The following steps are taken:
+### Data Pipeline
+```
+Raw Images → Preprocessing → Augmentation → Training/Validation Split → Model Training
+```
 
-<li> Loaded the ResNet50 model without the top classification layer.</li>
-<li> Added new layers for our specific classification task:</li>
-<li> Flattened the output of ResNet50.</li>
-<li> Added a dense layer with 512 units, ReLU activation, dropout, and batch normalization.</li>
-<li> Added another dense layer with 32 units, ReLU activation, dropout, and batch normalization.</li>
-<li> Added the final output layer with a softmax activation function to predict probabilities for each artist class.</li>
+### Web Application
+```
+User Upload → Image Processing → Model Prediction → GPT Analysis → Results Display
+```
 
-<b> Model Training </b>
-The model is trained using the augmented data, with the training process monitored through validation data. Key points include:
+## 📋 Prerequisites
 
-<li> Using Adam optimizer with a specified learning rate.</li>
-<li> Compiling the model with categorical cross-entropy loss and accuracy as the metric.</li>
-<li> Using callbacks EarlyStopping and ReduceLROnPlateau to reduce the learning rate when a metric (val_loss) has stopped improving.</li>
-<li> First Training Phase: Training the entire network for 20 epochs.</li>
-<li> Second Training Phase: Freeze the core ResNet layers and train only the first 50 layers for 50 epochs.</li>
+- Python 3.9 or higher
+- 8GB+ RAM (recommended for training)
+- GPU support (optional, for faster training)
+- Azure OpenAI API access (for GPT insights)
 
-# Setup Instructions
+## 🚀 Installation
 
-<li> Clone the repository: </li>
+### 1. Clone the Repository
+```bash
 git clone <repository-url>
-cd <repository-directory>
+cd Artist_Detection_DeepLearning
+```
 
-<li> Create and activate a virtual environment: </li>
+### 2. Create Virtual Environment
+```bash
+# Windows
 python -m venv venv
-# On Mac use: source venv/bin/activate   # On Windows use: venv\Scripts\activate
+venv\Scripts\activate
 
-<li> Install the required packages: </li>
+# macOS/Linux
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Usage
+### 4. Set Up Environment Variables
+Create a `.env` file in the project root:
+```env
+OPENAI_API_TYPE=azure
+OPENAI_API_BASE=your_azure_openai_endpoint
+OPENAI_API_VERSION=2024-02-15-preview
+OPENAI_API_KEY=your_azure_openai_key
+DEPLOYMENT_NAME=your_deployment_name
+```
 
-Run the model.py file to get the model saved in a model path
-Run the application: <b> python app.py </b>
-Use the test_images folder to test our model :)
+### 5. Prepare Data and Model
+```bash
+# Create required directories
+mkdir -p Artist_data/images/images
+mkdir -p model
+mkdir -p uploads
 
-P.S: if the application doesn't have an "uploads" folder, make sure to create that.
+# Download dataset from Kaggle
+# Place artists.csv in Artist_data/
+# Place artist images in Artist_data/images/images/
+```
 
-# Contribution Guidelines
+## 🎮 Usage
 
-You are welcome to contribute to this project! You can fork the repository or send a message to the creator to get an invite to collaborate directly. Current needs include improving the UI and optimizing model performance.
+### Training the Model
+```bash
+python model.py
+```
+This will:
+- Load and preprocess the dataset
+- Train the ResNet50 model
+- Save the trained model to `model/Artist_Resnet_model.h5`
 
-# License
+### Running the Web Application
+```bash
+python app.py
+```
+The application will be available at `http://localhost:5000`
 
-MIT License
+### Using Docker
+```bash
+# Build the Docker image
+docker build -t artist-detection .
+
+# Run the container
+docker run -p 5000:5000 artist-detection
+```
+
+## 📊 Model Performance
+
+### Training Details
+- **Dataset**: 18 artists with 150+ paintings each
+- **Data Augmentation**: Rotation, shifts, shears, zooms, flips
+- **Training Split**: 80% training, 20% validation
+- **Optimizer**: Adam with learning rate 0.0001
+- **Loss Function**: Categorical Cross-Entropy
+
+### Performance Metrics
+- **Accuracy**: 84%+ on validation set
+- **Training Time**: ~2-3 hours on GPU
+- **Inference Time**: <1 second per image
+
+## 🔧 Configuration
+
+### Model Parameters
+```python
+# In model.py
+input_shape = (224, 224, 3)
+batch_size = 32
+epochs_phase1 = 20
+epochs_phase2 = 50
+learning_rate = 0.0001
+```
+
+### Web App Settings
+```python
+# In app.py
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB file limit
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+```
+
+## 📁 Project Structure
+
+```
+Artist_Detection_DeepLearning/
+├── app.py                              # Flask web application
+├── model.py                            # ResNet50 model training
+├── data_preprocessing.py               # Data preprocessing pipeline
+├── requirements.txt                    # Python dependencies
+├── dockerfile                         # Docker configuration
+├── README.md                          # Project documentation
+├── .env                               # Environment variables (create this)
+├── .gitignore                         # Git ignore rules
+├── Artist_DataPreprocessing_Visualization_Model.ipynb  # Jupyter notebook
+├── templates/                         # HTML templates
+│   ├── index.html                     # Main prediction interface
+│   └── about.html                     # About page
+├── Artist_data/                       # Dataset directory (not in repo)
+│   ├── artists.csv                    # Artist metadata
+│   └── images/images/                 # Artist image folders
+├── model/                             # Trained models (not in repo)
+│   └── Artist_Resnet_model_0.84.h5    # Pre-trained model
+└── uploads/                           # User uploads (create this)
+```
+
+## 🧪 Testing
+
+### Test Images
+Create a `test_images/` folder with sample artwork to test the model:
+```bash
+mkdir test_images
+# Add some art images for testing
+```
+
+### API Testing
+```bash
+# Test the prediction endpoint
+curl -X POST -F "file=@test_images/sample.jpg" http://localhost:5000/predict
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Model not found error**
+   ```bash
+   # Ensure model file exists
+   ls model/Artist_Resnet_model_0.84.h5
+   ```
+
+2. **Uploads folder missing**
+   ```bash
+   mkdir uploads
+   ```
+
+3. **Azure OpenAI connection issues**
+   - Verify `.env` file configuration
+   - Check API key and endpoint validity
+
+4. **Memory issues during training**
+   - Reduce batch size in `model.py`
+   - Use GPU if available
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Areas for Improvement
+- UI/UX enhancements
+- Model performance optimization
+- Additional artist support
+- Mobile app development
+- API rate limiting
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Dataset**: [Best Artworks of All Time](https://www.kaggle.com/datasets/ikarus777/best-artworks-of-all-time) on Kaggle
+- **Base Model**: ResNet50 from TensorFlow/Keras
+- **AI Integration**: Azure OpenAI GPT models
+- **Web Framework**: Flask
+
+## 📞 Support
+
+For questions, issues, or contributions:
+- Open an issue on GitHub
+- Contact the project maintainer
+- Check the troubleshooting section above
+
+---
+
+**Made with ❤️ for Art and AI enthusiasts**

@@ -247,13 +247,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **AI Integration**: Azure OpenAI GPT models
 - **Web Framework**: Flask
 
-## 📞 Support
-
-For questions, issues, or contributions:
-- Open an issue on GitHub
-- Contact the project maintainer
-- Check the troubleshooting section above
-
----
-
-**Made with ❤️ for Art and AI enthusiasts**
